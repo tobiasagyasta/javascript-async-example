@@ -47,8 +47,24 @@ async function runDemo() {
     isActive: true,
   };
 
+  const newUserFromForm2 = {
+    id: 1000,
+    name: "Tobias Halomoan",
+    username: "halomoan.tobias",
+    email: "tobias@revou.com",
+    address: {
+      city: "Jakarta",
+      street: "Jl. Sesama No. 23",
+    },
+    company: {
+      name: "RevoU",
+    },
+    isActive: true,
+  };
+
   // Spread on arrays: add new user to the list
-  const allUsers = [...apiUsers, newUserFromForm];
+  const allUsers = [...apiUsers, newUserFromForm, newUserFromForm2];
+  console.log(allUsers);
 
   logOutput(`Total users after adding new one (spread): ${allUsers.length}`);
 
@@ -151,7 +167,15 @@ async function runDemo() {
     a.name.localeCompare(b.name)
   );
 
-  const [topUser, secondUser, thirdUser, ...otherUsers] = sortedByName;
+  const [
+    topUser,
+    secondUser,
+    thirdUser,
+    fourthUser,
+    fifthUser,
+    sixthUser,
+    ...otherUsers
+  ] = sortedByName;
 
   logOutput("\n=== TOP 3 USERS (array destructuring + rest) ===");
 
@@ -168,7 +192,14 @@ async function runDemo() {
     }
   }
 
-  describeTopUsers(topUser, secondUser, thirdUser);
+  describeTopUsers(
+    topUser,
+    secondUser,
+    thirdUser,
+    fourthUser,
+    fifthUser,
+    sixthUser
+  );
 
   logOutput(`\nOther users count (rest array): ${otherUsers.length}`);
 }
