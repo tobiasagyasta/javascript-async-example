@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Async Fetch Demo</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <p class="eyebrow">Async JavaScript</p>
+        <h1>Fetch, await, and what happens next</h1>
+        <p class="lede">
+          Click the button, then watch the console. The UI keeps responding
+          while we wait for the API response—this is the heart of asynchronous
+          code.
+        </p>
+        <p>
+          <a class="lede" href="wrong.html"
+            >Click here to see the wrong example of fetching.</a
+          >
+        </p>
+        <p>
+          <a class="lede" href="multiple.html"
+            >Click here to see fetching multiple routes.</a
+          >
+        </p>
+        <p>
+          <a class="lede" href="es6.html"
+            >Click here to see ES6 syntax in real API Work.</a
+          >
+        </p>
+      </header>
+
+      <section class="card">
+        <div class="controls">
+          <button id="load-posts" class="primary">Load posts</button>
+          <span id="status" class="status">Waiting to start…</span>
+        </div>
+        <ol id="posts" class="posts" aria-live="polite">
+          <li class="placeholder">
+            Posts will appear here once the fetch resolves.
+          </li>
+        </ol>
+      </section>
+
+      <section class="card callout">
+        <h2>Try it like a debugger</h2>
+        <ol class="steps">
+          <li>Open DevTools → Console to see the numbered log steps.</li>
+          <li>
+            Click “Load posts”. Notice step 4 logs immediately—JS keeps going
+            while fetch waits.
+          </li>
+          <li>
+            When the network reply arrives, JSON parsing runs, the list updates,
+            and the status flips to “Done!”.
+          </li>
+          <li>
+            Disconnect or throttle the network to see the catch block and the
+            error status.
+          </li>
+        </ol>
+      </section>
+    </main>
+
+    <script src="scripts/fetch.js" defer></script>
+  </body>
+</html>

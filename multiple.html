@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multiple Fetch Strategies</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <a href="index.html" class="eyebrow">Back to main demo</a>
+        <p class="eyebrow">Async</p>
+        <h1>Fetching multiple routes</h1>
+        <p class="lede">
+          Two buttons, two strategies. Run them and watch the console to see the
+          difference between sequential and parallel requests.
+        </p>
+      </header>
+
+      <section class="card">
+        <div class="columns">
+          <div>
+            <h2>Sequential (one after the other)</h2>
+            <p class="muted">
+              Wait for posts to finish, then start users. Total time ≈ sum of both
+              requests.
+            </p>
+            <ol class="steps">
+              <li>Open the console first.</li>
+              <li>Click the button; note “Sequential start”.</li>
+              <li>“Sequential end” arrives after both fetches finish.</li>
+            </ol>
+            <div class="controls">
+              <button id="run-sequential" class="primary">Run sequential</button>
+              <span id="status-sequential" class="status">Waiting…</span>
+            </div>
+          </div>
+          <div class="card info">
+            <h3>Use sequential when:</h3>
+            <ul class="bad-list">
+              <li>You need result A before requesting B.</li>
+              <li>Later requests depend on earlier data.</li>
+              <li>Rate limits force you to go slowly.</li>
+            </ul>
+          </div>
+        </div>
+        <ol id="log-sequential" class="posts" aria-live="polite">
+          <li class="placeholder">No runs yet.</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <div class="columns">
+          <div>
+            <h2>Parallel (at the same time)</h2>
+            <p class="muted">
+              Kick off both requests together with <code>Promise.all</code>. Total
+              time ≈ the slower request.
+            </p>
+            <ol class="steps">
+              <li>Open the console first.</li>
+              <li>Click the button; note “Parallel start”.</li>
+              <li>“Parallel end” arrives once both are done.</li>
+            </ol>
+            <div class="controls">
+              <button id="run-parallel" class="primary">Run parallel</button>
+              <span id="status-parallel" class="status">Waiting…</span>
+            </div>
+          </div>
+          <div class="card info">
+            <h3>Use parallel when:</h3>
+            <ul class="bad-list">
+              <li>Requests are independent of each other.</li>
+              <li>You want the fastest combined time.</li>
+              <li>Your API allows concurrent calls.</li>
+            </ul>
+          </div>
+        </div>
+        <ol id="log-parallel" class="posts" aria-live="polite">
+          <li class="placeholder">No runs yet.</li>
+        </ol>
+      </section>
+
+      <section class="card callout">
+        <h2>What to notice</h2>
+        <ul class="bad-list">
+          <li>
+            Sequential waits for each step; if one API is slow, the total time
+            stacks up.
+          </li>
+          <li>
+            Parallel waits for both together; the total time is roughly the slower
+            call.
+          </li>
+          <li>
+            Both still use async/await under the hood—watch the console for the
+            timestamps and logs in <code>scripts/multiple-fetch.js</code>.
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="scripts/multiple-fetch.js" defer></script>
+    <script>
+      const seqBtn = document.getElementById("run-sequential");
+      const parBtn = document.getElementById("run-parallel");
+      const seqStatus = document.getElementById("status-sequential");
+      const parStatus = document.getElementById("status-parallel");
+      const seqLog = document.getElementById("log-sequential");
+      const parLog = document.getElementById("log-parallel");
+
+      function addLog(listEl, text) {
+        const li = document.createElement("li");
+        li.className = "placeholder";
+        li.textContent = text;
+        listEl.innerHTML = "";
+        listEl.appendChild(li);
+      }
+
+      async function runSequential() {
+        seqBtn.disabled = true;
+        seqStatus.textContent = "Running sequential…";
+        addLog(seqLog, "Starting sequential run…");
+        const start = performance.now();
+        try {
+          await loadPostsAndUsersSequential();
+          const elapsed = ((performance.now() - start) / 1000).toFixed(2);
+          seqStatus.textContent = `Done in ~${elapsed}s (see console for data)`;
+          addLog(seqLog, `Finished after ~${elapsed}s — waited for posts, then users.`);
+        } catch (error) {
+          console.error(error);
+          seqStatus.textContent = "Sequential run failed (check console).";
+          addLog(seqLog, "Error during sequential fetch.");
+        } finally {
+          seqBtn.disabled = false;
+        }
+      }
+
+      async function runParallel() {
+        parBtn.disabled = true;
+        parStatus.textContent = "Running parallel…";
+        addLog(parLog, "Starting parallel run…");
+        const start = performance.now();
+        try {
+          await loadPostsAndUsersParallel();
+          const elapsed = ((performance.now() - start) / 1000).toFixed(2);
+          parStatus.textContent = `Done in ~${elapsed}s (see console for data)`;
+          addLog(parLog, `Finished after ~${elapsed}s — waited for both together.`);
+        } catch (error) {
+          console.error(error);
+          parStatus.textContent = "Parallel run failed (check console).";
+          addLog(parLog, "Error during parallel fetch.");
+        } finally {
+          parBtn.disabled = false;
+        }
+      }
+
+      seqBtn.addEventListener("click", runSequential);
+      parBtn.addEventListener("click", runParallel);
+    </script>
+  </body>
+</html>

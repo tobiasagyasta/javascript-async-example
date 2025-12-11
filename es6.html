@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ES6 in Real API Work</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <a href="index.html" class="eyebrow">Back to main demo</a>
+        <p class="eyebrow">Modern JavaScript</p>
+        <h1>ES6 tools for real-world API data</h1>
+        <p class="lede">
+          Run the demo to see how async/await, spread, destructuring,
+          map/filter/reduce, and template literals clean and reshape API data
+          into something UI-ready.
+        </p>
+      </header>
+
+      <section class="card">
+        <div class="controls">
+          <button id="run-demo" class="primary">Run ES6 demo</button>
+          <span class="status">Uses fetch + ES6 methods; check the output below.</span>
+        </div>
+        <p class="muted">
+          The script fetches users, clones and augments data with spread, cleans
+          fields via map + destructuring, filters active users, builds display
+          strings with template literals, and produces quick stats with reduce.
+          Everything logs below in order.
+        </p>
+        <pre id="output" class="terminal" aria-live="polite">
+Click "Run ES6 demo" to fetch and process users...
+        </pre>
+      </section>
+
+      <section class="card callout">
+        <h2>When to use these ES6 features</h2>
+        <div class="columns">
+          <div class="info">
+            <h3>Spread &amp; Rest</h3>
+            <ul class="bad-list">
+              <li>Copy API arrays before mutating; avoid side effects.</li>
+              <li>Merge new items into API results without touching originals.</li>
+              <li>Capture “everything else” without listing every field.</li>
+            </ul>
+          </div>
+          <div class="info">
+            <h3>Destructuring</h3>
+            <ul class="bad-list">
+              <li>Pluck nested fields with defaults to handle missing data.</li>
+              <li>Rename fields to match your UI layer.</li>
+              <li>Make intent obvious when shaping objects.</li>
+            </ul>
+          </div>
+          <div class="info">
+            <h3>Map / Filter / Reduce</h3>
+            <ul class="bad-list">
+              <li>Map: normalize and format rows for display.</li>
+              <li>Filter: keep only users that pass a rule (e.g., active).</li>
+              <li>Reduce: compute aggregates for dashboards.</li>
+            </ul>
+          </div>
+          <div class="info">
+            <h3>Template literals</h3>
+            <ul class="bad-list">
+              <li>Build readable strings for UI labels and logs.</li>
+              <li>Embed variables inline instead of concatenation.</li>
+              <li>Keep formatting in one place.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="scripts/es6-syntaxes-usecase.js" defer></script>
+  </body>
+</html>

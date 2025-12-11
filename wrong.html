@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anti-Pattern: Fetch Without async/await</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="wrong">
+    <main class="page">
+      <header class="hero">
+        <a href="index.html" class="eyebrow">Go back home</a>
+        <p class="eyebrow">Async</p>
+        <h1>Fetching the WRONG way</h1>
+        <p class="lede">
+          Click the button below to run <code>scripts/wrong-fetch.js</code>. It
+          tries to fetch posts without awaiting the network response, then
+          immediately returns an empty array. Open DevTools → Console to see why
+          that fails.
+        </p>
+      </header>
+
+      <section class="card warning">
+        <div class="badge">Live demo</div>
+        <h2>Click and watch the console</h2>
+        <p class="muted">
+          When you click, we load the script, which calls
+          <code>getPostsWrong()</code> once. Because the fetch is still pending,
+          it returns <code>[]</code>. The network reply lands after the return
+          statement—too late to update the value.
+        </p>
+        <ol class="steps">
+          <li>Open the console (Ctrl/Cmd + Shift + J).</li>
+          <li>Click “Run the wrong fetch”. Note the log: <code>Posts (WRONG): []</code>.</li>
+          <li>The UI below also gets back an empty array and never fills in.</li>
+        </ol>
+
+        <div class="controls">
+          <button id="load-wrong" class="primary">Run the wrong fetch</button>
+          <span id="status-wrong" class="status">Waiting to demonstrate…</span>
+        </div>
+        <ol id="posts-wrong" class="posts" aria-live="polite">
+          <li class="placeholder">
+            Nothing to show yet. Click the button, and see how the return value
+            is empty even while the network request is in flight.
+          </li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2>What the code does (and why it fails)</h2>
+        <pre class="code-block"><code>function getPostsWrong() {
+  let result = [];
+
+  fetch("https://jsonplaceholder.typicode.com/posts?_limit=3")
+    .then((response) => response.json())
+    .then((data) => {
+      result = data;
+    });
+
+  return result; // returns [] before fetch resolves
+}</code></pre>
+        <ul class="bad-list">
+          <li>
+            Returns <strong>immediately</strong>, before the
+            <code>then</code> callbacks run.
+          </li>
+          <li>
+            Mutating <code>result</code> later does not change the
+            already-returned value.
+          </li>
+          <li>
+            The console shows an empty array, even though the network eventually
+            succeeds.
+          </li>
+        </ul>
+        <p class="muted">
+          The fix: make the function <code>async</code> and
+          <code>await</code> the fetch (see <code>index.html</code> for the
+          correct version).
+        </p>
+      </section>
+    </main>
+
+    <script>
+      const loadBtn = document.getElementById("load-wrong");
+      const statusEl = document.getElementById("status-wrong");
+      const postsEl = document.getElementById("posts-wrong");
+      let scriptLoaded = false;
+      let scriptLoading = false;
+
+      function renderResult(label) {
+        postsEl.innerHTML = "";
+        const li = document.createElement("li");
+        li.className = "placeholder";
+        const value = typeof posts !== "undefined" ? JSON.stringify(posts) : "undefined";
+        li.textContent = `${label}: ${value}`;
+        postsEl.appendChild(li);
+      }
+
+      loadBtn.addEventListener("click", () => {
+        statusEl.textContent = "Loading script + calling getPostsWrong()…";
+        postsEl.innerHTML = "";
+        const waitLi = document.createElement("li");
+        waitLi.className = "placeholder";
+        waitLi.textContent = "Waiting for the return value…";
+        postsEl.appendChild(waitLi);
+
+        if (scriptLoaded) {
+          renderResult("Returned immediately");
+          setTimeout(() => {
+            statusEl.textContent =
+              "Still empty even after the network finishes—because we returned too early.";
+          }, 800);
+          return;
+        }
+        if (scriptLoading) return;
+        scriptLoading = true;
+
+        const script = document.createElement("script");
+        script.src = "scripts/wrong-fetch.js";
+        script.onload = () => {
+          scriptLoaded = true;
+          scriptLoading = false;
+          statusEl.textContent = "Script ran. The return value was captured instantly.";
+          renderResult("getPostsWrong() gave us");
+          setTimeout(() => {
+            statusEl.textContent =
+              "Even after waiting, the array is still empty—fetch resolved after the return.";
+          }, 1200);
+        };
+        script.onerror = () => {
+          scriptLoading = false;
+          statusEl.textContent = "Could not load scripts/wrong-fetch.js";
+          postsEl.innerHTML = '<li class="placeholder">Script failed to load.</li>';
+        };
+        document.body.appendChild(script);
+      });
+    </script>
+  </body>
+</html>
